@@ -1,0 +1,14 @@
+.idea
+.env
+
+logs
+!logs/.gitkeep
+
+backup
+!backup/.gitkeep
+
+wordpress
+!wordpress/.gitkeep
+!wordpress/README.md
+ssl
+!ssl/.gitkeep

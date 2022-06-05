@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  blog:
+    image: wordpress:6-php8.1-fpm
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+    networks:
+      - wordpress
+    volumes:
+      - ${WORDPRESS_LOCAL_HOME}:/var/www/html
+    ports:
+      - "9000:9000"
+
+  mysql:
+    image: mysql:8
+    env_file:
+      - .env
+    networks:
+      - wordpress
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+  nginx:
+    image: nginx:1.22
+    volumes:
+      - ${WORDPRESS_LOCAL_HOME}:/var/www/html
+      - ./docker/nginx/templates:/etc/nginx/templates
+      - ./logs:/var/log/nginx
+      - ${NGINX_SSL_CERTS}:/etc/ssl:ro
+    ports:
+      - "8080:80"    # http
+      - "8443:443"   # https
+    environment:
+      - NGINX_HOST=${NGINX_HOST}
+      - NGINX_PORT=${NGINX_PORT_HTTP}
+    ## debug mode
+    command: [nginx-debug, '-g', 'daemon off;']
+    depends_on:
+      - blog
+    networks:
+      - wordpress
+
+networks:
+  wordpress:
+    name: wp-wordpress
+    driver: bridge
