@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   blog:
-    image: wordpress:6-php8.1-fpm
+    image: wordpress:6-php8.3-fpm
     env_file:
       - .env
     depends_on:
